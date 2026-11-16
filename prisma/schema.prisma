@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  plan      String   @default("FREE") // "FREE", "VIP_4K"
+  createdAt DateTime @default(now())
+}
+
+model Movie {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  overview       String
+  posterUrl      String
+  backdropUrl    String
+  youtubeVideoId String
+  releaseDate    String?
+  duration       String?
+  rating         Float?   @default(7.5)
+  genres         String   @default("Action, Thriller")
+  cast           String?
+  isFeatured     Boolean  @default(false)
+  isTrending     Boolean  @default(false)
+  views          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AdPlacement {
+  id        String   @id @default(uuid())
+  title     String
+  slot      String   @unique // "PREROLL", "PAUSE_AD", "HEADER", "BELOW_PLAYER"
+  code      String
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id             String  @id @default("default")
+  siteName       String  @default("CinemaFlix")
+  siteTagline    String  @default("Watch Unlimited HD Movies & Shows Free")
+  theaterMode    Boolean @default(true)
+  enablePreroll  Boolean @default(true)
+  enablePauseAd  Boolean @default(true)
+  enableComments Boolean @default(true)
+}
