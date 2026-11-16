@@ -192,6 +192,16 @@ export default function Navbar() {
                       </span>
                     </div>
 
+                    {(user.email === "owner@cinemaflix.com" || user.email === "admin@cinemaflix.com") && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setUserDropdown(false)}
+                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-red-400 hover:bg-neutral-800 transition font-bold text-xs"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Admin Studio
+                      </Link>
+                    )}
+
                     <button
                       onClick={() => {
                         logout();

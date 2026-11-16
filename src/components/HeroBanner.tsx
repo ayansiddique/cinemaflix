@@ -21,7 +21,7 @@ export default function HeroBanner({ movie }: { movie: HeroMovie | null }) {
     <div className="relative w-full h-[68vh] min-h-[500px] sm:h-[75vh] sm:min-h-[580px] max-h-[800px] overflow-hidden select-none">
       {/* 4K Backdrop - Centered at top on mobile so faces & landscape are never cut off */}
       <div
-        className="absolute inset-0 bg-cover bg-[center_12%] sm:bg-center transition-transform duration-1000 scale-100 hover:scale-105"
+        className="absolute inset-0 bg-cover bg-[center_12%] sm:bg-center"
         style={{
           backgroundImage: `url(${movie.backdropUrl})`,
         }}

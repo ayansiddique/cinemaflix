@@ -63,6 +63,11 @@ export default function AuthModals() {
         throw new Error(data.error || "Authentication failed");
       }
 
+      if (data.user?.role === "ADMIN") {
+        localStorage.setItem("cinemaflix_admin_session", "AUTHENTICATED_MASTER_SESSION_2026");
+        document.cookie = "cinemaflix_admin_auth=true; path=/; max-age=86400; SameSite=Strict";
+      }
+
       login(data.user);
     } catch (err: any) {
       setAuthError(err.message || "Failed to authenticate");
