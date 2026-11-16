@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateSlug, extractYouTubeId } from "@/lib/youtube";
+import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
 
 export async function GET(request: Request) {
   try {
@@ -10,30 +11,52 @@ export async function GET(request: Request) {
     const featured = searchParams.get("featured");
     const trending = searchParams.get("trending");
 
-    const where: any = {};
+    let movies: any[] = [];
+    try {
+      const where: any = {};
 
-    if (featured === "true") where.isFeatured = true;
-    if (trending === "true") where.isTrending = true;
-    if (search) {
-      where.OR = [
-        { title: { contains: search } },
-        { genres: { contains: search } },
-        { cast: { contains: search } },
-      ];
-    }
-    if (category && category !== "All") {
-      where.genres = { contains: category };
+      if (featured === "true") where.isFeatured = true;
+      if (trending === "true") where.isTrending = true;
+      if (search) {
+        where.OR = [
+          { title: { contains: search } },
+          { genres: { contains: search } },
+          { cast: { contains: search } },
+        ];
+      }
+      if (category && category !== "All") {
+        where.genres = { contains: category };
+      }
+
+      movies = await prisma.movie.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (dbErr) {
+      console.warn("DB query failed in /api/movies, using DEFAULT_MOVIES fallback:", dbErr);
     }
 
-    const movies = await prisma.movie.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    if (!movies || movies.length === 0) {
+      movies = DEFAULT_MOVIES;
+      if (featured === "true") movies = movies.filter((m) => m.isFeatured);
+      if (trending === "true") movies = movies.filter((m) => m.isTrending);
+      if (category && category !== "All") {
+        movies = movies.filter((m) => (m.genres || "").toLowerCase().includes(category.toLowerCase()));
+      }
+      if (search) {
+        const s = search.toLowerCase();
+        movies = movies.filter((m) =>
+          (m.title || "").toLowerCase().includes(s) ||
+          (m.genres || "").toLowerCase().includes(s) ||
+          (m.cast || "").toLowerCase().includes(s)
+        );
+      }
+    }
 
     return NextResponse.json(movies);
   } catch (error: any) {
     console.error("GET /api/movies error:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch movies" }, { status: 500 });
+    return NextResponse.json(DEFAULT_MOVIES);
   }
 }
 

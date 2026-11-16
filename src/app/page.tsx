@@ -4,33 +4,60 @@ import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
+import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [featuredMovie, trendingMovies, allMovies, headerAd] = await Promise.all([
-    prisma.movie.findFirst({
-      where: { isFeatured: true },
-      orderBy: { createdAt: "desc" },
-    }) || prisma.movie.findFirst({ orderBy: { createdAt: "desc" } }),
-    prisma.movie.findMany({
-      where: { isTrending: true },
-      orderBy: { views: "desc" },
-    }),
-    prisma.movie.findMany({
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.adPlacement.findUnique({
-      where: { slot: "HEADER" },
-    }),
-  ]);
+  let featuredMovie: any = null;
+  let trendingMovies: any[] = [];
+  let allMovies: any[] = [];
+  let headerAd: any = null;
+
+  try {
+    const [dbFeatured, dbTrending, dbAll, dbHeaderAd] = await Promise.all([
+      prisma.movie.findFirst({
+        where: { isFeatured: true },
+        orderBy: { createdAt: "desc" },
+      }).catch(() => null),
+      prisma.movie.findMany({
+        where: { isTrending: true },
+        orderBy: { views: "desc" },
+      }).catch(() => []),
+      prisma.movie.findMany({
+        orderBy: { createdAt: "desc" },
+      }).catch(() => []),
+      prisma.adPlacement.findUnique({
+        where: { slot: "HEADER" },
+      }).catch(() => null),
+    ]);
+
+    featuredMovie = dbFeatured;
+    trendingMovies = dbTrending || [];
+    allMovies = dbAll || [];
+    headerAd = dbHeaderAd;
+  } catch (error) {
+    console.warn("Prisma query failed on Vercel runtime, falling back to default movies:", error);
+  }
+
+  // Resilient fallback if database is empty or unavailable
+  if (!allMovies || allMovies.length === 0) {
+    allMovies = DEFAULT_MOVIES;
+  }
+  if (!featuredMovie) {
+    featuredMovie = allMovies.find((m) => m.isFeatured) || allMovies[0];
+  }
+  if (!trendingMovies || trendingMovies.length === 0) {
+    trendingMovies = allMovies.filter((m) => m.isTrending);
+    if (trendingMovies.length === 0) trendingMovies = allMovies;
+  }
 
   // Filter category subsets
   const actionMovies = allMovies.filter((m) =>
-    m.genres.toLowerCase().includes("action") || m.genres.toLowerCase().includes("sci-fi")
+    (m.genres || "").toLowerCase().includes("action") || (m.genres || "").toLowerCase().includes("sci-fi")
   );
   const dramaMovies = allMovies.filter((m) =>
-    m.genres.toLowerCase().includes("drama") || m.genres.toLowerCase().includes("crime")
+    (m.genres || "").toLowerCase().includes("drama") || (m.genres || "").toLowerCase().includes("crime")
   );
 
   return (

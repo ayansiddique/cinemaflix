@@ -8,6 +8,11 @@ const nextConfig = {
       { protocol: "https", hostname: "img.youtube.com" },
     ],
   },
+  experimental: {
+    outputFileTracingIncludes: {
+      "/**": ["./prisma/dev.db"],
+    },
+  },
 };
 
 export default nextConfig;

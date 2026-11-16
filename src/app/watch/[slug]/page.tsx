@@ -9,8 +9,8 @@ import {
   ArrowLeft,
   Crown,
 } from "lucide-react";
-
 import Footer from "@/components/Footer";
+import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
 
 export const dynamic = "force-dynamic";
 
@@ -21,36 +21,58 @@ interface WatchPageProps {
 export default async function WatchPage({ params }: WatchPageProps) {
   const { slug } = params;
 
-  // Fetch movie
-  const movie = await prisma.movie.findFirst({
-    where: {
-      OR: [{ slug }, { id: slug }],
-    },
-  });
+  let movie: any = null;
+  let sidebarAd: any = null;
+  let moreMovies: any[] = [];
+
+  try {
+    movie = await prisma.movie.findFirst({
+      where: {
+        OR: [{ slug }, { id: slug }],
+      },
+    }).catch(() => null);
+
+    if (movie) {
+      // Increment views safely without breaking on readonly disk
+      prisma.movie.update({
+        where: { id: movie.id },
+        data: { views: { increment: 1 } },
+      }).catch(() => {});
+
+      sidebarAd = await prisma.adPlacement.findFirst({
+        where: { isActive: true },
+      }).catch(() => null);
+
+      moreMovies = await prisma.movie.findMany({
+        where: {
+          id: { not: movie.id },
+        },
+        take: 6,
+        orderBy: { views: "desc" },
+      }).catch(() => []);
+    }
+  } catch (err) {
+    console.warn("Prisma error in WatchPage:", err);
+  }
+
+  // Fallback to DEFAULT_MOVIES if not found or DB unreachable
+  if (!movie) {
+    movie = DEFAULT_MOVIES.find(
+      (m) =>
+        m.slug.toLowerCase() === slug.toLowerCase() ||
+        m.id.toLowerCase() === slug.toLowerCase()
+    );
+  }
 
   if (!movie) {
     notFound();
   }
 
-  // Increment views
-  await prisma.movie.update({
-    where: { id: movie.id },
-    data: { views: { increment: 1 } },
-  });
-
-  // Fetch active Sidebar Ad
-  const sidebarAd = await prisma.adPlacement.findFirst({
-    where: { isActive: true },
-  });
-
-  // Fetch "More Like This" movies
-  const moreMovies = await prisma.movie.findMany({
-    where: {
-      id: { not: movie.id },
-    },
-    take: 6,
-    orderBy: { views: "desc" },
-  });
+  if (!moreMovies || moreMovies.length === 0) {
+    moreMovies = DEFAULT_MOVIES.filter(
+      (m) => m.id !== movie.id && m.slug !== movie.slug
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0e0f12] text-white selection:bg-red-600 selection:text-white">
