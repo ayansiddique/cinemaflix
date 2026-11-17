@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import AdsterraBanner from "@/components/AdsterraBanner";
 import {
   Play,
   Pause,
@@ -451,9 +452,9 @@ export default function CustomPlayer({
             </div>
           )}
 
-          {/* Preroll Ad - Ultra Sleek & Compact (Never overflows small mobile player) */}
+          {/* Preroll Ad - Ultra Sleek & Compact with Real Live Adsterra Banner */}
           {adState === "PREROLL" && (
-            <div className="absolute inset-0 z-30 bg-black/95 backdrop-blur-sm flex flex-col justify-between p-3 sm:p-5 select-none animate-in fade-in duration-150">
+            <div className="absolute inset-0 z-30 bg-black/95 backdrop-blur-sm flex flex-col justify-between p-3 sm:p-5 select-none animate-in fade-in duration-150 overflow-hidden">
               {/* Top: Sponsor Tag */}
               <div className="flex items-center justify-between">
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
@@ -468,18 +469,9 @@ export default function CustomPlayer({
                 </button>
               </div>
 
-              {/* Center: Stream 1080p banner */}
-              <div className="text-center space-y-1 py-1">
-                <p className="text-xs sm:text-sm font-bold text-white">Stream 1080p & 4K Without Ads</p>
-                <p className="text-[10px] sm:text-xs text-neutral-400 max-w-xs mx-auto line-clamp-1">
-                  Join VIP for zero sponsor breaks & Ultra HD cinema.
-                </p>
-                <button
-                  onClick={openUpgradeModal}
-                  className="px-4 py-1.5 bg-[#f5c518] hover:bg-[#e2b616] text-black font-extrabold text-[11px] sm:text-xs rounded-lg shadow transition"
-                >
-                  {t("goPremium")} (Rs 499)
-                </button>
+              {/* Center: Live Adsterra 300x250 Banner Ad */}
+              <div className="flex-1 flex items-center justify-center my-1 overflow-hidden">
+                <AdsterraBanner minimal={true} />
               </div>
 
               {/* Bottom: Skip Countdown & Skip Button */}
@@ -501,13 +493,13 @@ export default function CustomPlayer({
             </div>
           )}
 
-          {/* Pause Ad */}
+          {/* Pause Ad with Real Live Adsterra Banner */}
           {adState === "PAUSE_AD" && (
-            <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-              <div className="bg-[#18181c] border border-neutral-700/80 rounded-2xl p-4 max-w-xs sm:max-w-sm w-full shadow-2xl relative space-y-2.5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="absolute inset-0 z-30 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 select-none overflow-y-auto">
+              <div className="bg-[#141418] border border-neutral-700/80 rounded-2xl p-4 max-w-sm w-full shadow-2xl relative space-y-3 animate-in fade-in zoom-in-95 duration-200">
                 <button
                   onClick={() => setAdState("NONE")}
-                  className="absolute top-2.5 right-2.5 text-neutral-400 hover:text-white"
+                  className="absolute top-2.5 right-2.5 text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-800 transition"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -519,25 +511,23 @@ export default function CustomPlayer({
                   <span className="text-xs text-neutral-400 font-medium">{t("sponsorMsg")}</span>
                 </div>
 
-                <h4 className="text-xs sm:text-sm font-bold text-white">
-                  Want to skip all ads?
-                </h4>
-                <p className="text-[11px] text-neutral-400">
-                  Upgrade to Go Premium to unlock 4K Ultra HD and 100% ad-free cinema.
-                </p>
+                {/* Center: Live Adsterra 300x250 Banner Ad */}
+                <div className="flex justify-center overflow-hidden">
+                  <AdsterraBanner minimal={true} />
+                </div>
 
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     onClick={togglePlay}
-                    className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition"
+                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition shadow-lg shadow-red-600/30"
                   >
                     <Play className="w-3.5 h-3.5 fill-white" /> {t("resumeMovie")}
                   </button>
                   <button
                     onClick={openUpgradeModal}
-                    className="py-2 px-3 bg-[#f5c518] hover:bg-[#e2b616] text-black font-extrabold text-xs rounded-xl"
+                    className="py-2.5 px-3.5 bg-[#f5c518] hover:bg-[#e2b616] text-black font-extrabold text-xs rounded-xl shadow transition"
                   >
-                    VIP
+                    👑 VIP
                   </button>
                 </div>
               </div>

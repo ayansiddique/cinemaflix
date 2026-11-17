@@ -3,7 +3,11 @@
 import React, { useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 
-export default function AdsterraBanner() {
+interface AdsterraBannerProps {
+  minimal?: boolean;
+}
+
+export default function AdsterraBanner({ minimal = false }: AdsterraBannerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +59,17 @@ export default function AdsterraBanner() {
   }, [user]);
 
   if (user?.plan === "VIP_4K") return null;
+
+  if (minimal) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-[300px] h-[250px] min-w-[300px] min-h-[250px] bg-neutral-900/60 rounded-xl border border-neutral-800/80 flex items-center justify-center overflow-hidden shadow-lg select-none"
+      >
+        <span className="text-[11px] text-neutral-500 animate-pulse">Loading Sponsor...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center my-3 overflow-hidden select-none">
