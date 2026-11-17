@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
+import AdsterraBanner from "@/components/AdsterraBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -107,28 +108,25 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
           {/* RIGHT SIDEBAR: Contained Ad & Clean Recommendations (4 of 12 columns) */}
           <div className="lg:col-span-4 space-y-6">
-            {/* 1. Contained Ad Banner Slot */}
-            {sidebarAd && sidebarAd.isActive ? (
-              <div className="p-2 text-center overflow-hidden">
-                <div dangerouslySetInnerHTML={{ __html: sidebarAd.code }} />
+            {/* 1. Official Adsterra 300x250 Banner Slot */}
+            <AdsterraBanner />
+
+            {/* 2. Go Premium VIP Pass */}
+            <div className="bg-neutral-900/60 border border-neutral-800/60 p-4 rounded-2xl text-left space-y-2">
+              <div className="flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-400" />
+                <span className="text-xs font-black text-white">Go Premium VIP Pass</span>
               </div>
-            ) : (
-              <div className="bg-neutral-900/60 border border-neutral-800/60 p-4 rounded-2xl text-left space-y-2">
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-black text-white">Go Premium VIP Pass</span>
-                </div>
-                <p className="text-xs text-neutral-400">
-                  Unlock 1080p FHD & 4K Ultra HD. 100% ad-free cinema experience.
-                </p>
-                <Link
-                  href="/#go-premium"
-                  className="inline-block w-full py-2 bg-[#f5c518] hover:bg-[#e2b616] text-black font-extrabold text-xs text-center rounded-xl shadow transition"
-                >
-                  Go Premium (Rs 499)
-                </Link>
-              </div>
-            )}
+              <p className="text-xs text-neutral-400">
+                Unlock 1080p FHD & 4K Ultra HD. 100% ad-free cinema experience.
+              </p>
+              <Link
+                href="/#go-premium"
+                className="inline-block w-full py-2 bg-[#f5c518] hover:bg-[#e2b616] text-black font-extrabold text-xs text-center rounded-xl shadow transition"
+              >
+                Go Premium (Rs 499)
+              </Link>
+            </div>
 
             {/* 2. "More Like This" Recommendations Grid (Clean flat minimal layout) */}
             <div className="space-y-3">

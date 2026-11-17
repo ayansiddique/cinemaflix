@@ -5,6 +5,7 @@ import HeroBanner from "@/components/HeroBanner";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
 import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
+import AdsterraBanner from "@/components/AdsterraBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -69,15 +70,10 @@ export default async function HomePage() {
           {/* Hero Spotlight Banner */}
           <HeroBanner movie={featuredMovie} />
 
-          {/* Ad Placement: Header Ad Slot */}
-          {headerAd && headerAd.isActive && (
-            <div className="max-w-6xl mx-auto px-4 overflow-hidden my-4">
-              <div
-                className="text-center"
-                dangerouslySetInnerHTML={{ __html: headerAd.code }}
-              />
-            </div>
-          )}
+          {/* Ad Placement: Official Adsterra Sponsored Banner Slot */}
+          <div className="max-w-6xl mx-auto px-4 overflow-hidden my-2 flex justify-center">
+            <AdsterraBanner />
+          </div>
 
           {/* Movie Rows (Netflix Style) */}
           <div className="space-y-12 relative z-20">

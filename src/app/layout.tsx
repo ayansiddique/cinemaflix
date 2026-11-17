@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -23,6 +24,12 @@ export default function RootLayout({
             <AuthModals />
           </AuthProvider>
         </LanguageProvider>
+
+        {/* Adsterra Global Network Integration */}
+        <Script
+          src="https://aarems.org/1/5dd17a99e17c139b4c942e8b88e3deaa"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
