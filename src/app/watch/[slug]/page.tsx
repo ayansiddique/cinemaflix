@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
+import { getCustomMovies } from "@/lib/customStore";
 import AdsterraBanner from "@/components/AdsterraBanner";
 
 export const dynamic = "force-dynamic";
@@ -56,9 +57,10 @@ export default async function WatchPage({ params }: WatchPageProps) {
     console.warn("Prisma error in WatchPage:", err);
   }
 
-  // Fallback to DEFAULT_MOVIES if not found or DB unreachable
+  // Check published custom movies and DEFAULT_MOVIES
   if (!movie) {
-    movie = DEFAULT_MOVIES.find(
+    const allAvailable = [...getCustomMovies(), ...DEFAULT_MOVIES];
+    movie = allAvailable.find(
       (m) =>
         m.slug.toLowerCase() === slug.toLowerCase() ||
         m.id.toLowerCase() === slug.toLowerCase()
@@ -70,7 +72,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
   }
 
   if (!moreMovies || moreMovies.length === 0) {
-    moreMovies = DEFAULT_MOVIES.filter(
+    const allAvailable = [...getCustomMovies(), ...DEFAULT_MOVIES];
+    moreMovies = allAvailable.filter(
       (m) => m.id !== movie.id && m.slug !== movie.slug
     );
   }

@@ -5,6 +5,7 @@ import HeroBanner from "@/components/HeroBanner";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
 import { DEFAULT_MOVIES } from "@/lib/defaultMovies";
+import { getCustomMovies } from "@/lib/customStore";
 import AdsterraBanner from "@/components/AdsterraBanner";
 
 export const dynamic = "force-dynamic";
@@ -44,6 +45,14 @@ export default async function HomePage() {
   // Resilient fallback if database is empty or unavailable
   if (!allMovies || allMovies.length === 0) {
     allMovies = DEFAULT_MOVIES;
+  }
+
+  // Include movies published by Admin
+  const custom = getCustomMovies();
+  if (custom.length > 0) {
+    const existingIds = new Set(allMovies.map((m) => m.id));
+    const uniqueCustom = custom.filter((m) => !existingIds.has(m.id));
+    allMovies = [...uniqueCustom, ...allMovies];
   }
   if (!featuredMovie) {
     featuredMovie = allMovies.find((m) => m.isFeatured) || allMovies[0];
